@@ -29,21 +29,3 @@ export const addMovie = (movie) => async (dispatch, getState, apiUrl) => {
     return Promise.reject(err);
   }
 };
-
-
-// export const addMovie = (movie) => (dispatch, getState, apiUrl) => {
-//   dispatch(addMovieRequestStart());
-//   // eslint-disable-next-line no-new
-//   return new Promise((resolve, reject) => {
-//     (async () => {
-//       try {
-//         await axios.post(apiUrl, movie);
-//         dispatch(addMovieRequestSuccess());
-//         return resolve();
-//       } catch (err) {
-//         dispatch(addMovieRequestError(err.message));
-//         return reject(err);
-//       }
-//     })();
-//   });
-// };

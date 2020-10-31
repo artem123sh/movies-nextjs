@@ -1,0 +1,24 @@
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  background: #555555;
+  color: #FFFFFF;
+  margin: auto;
+  font-family: "Yu Gothic UI Light", sans-serif;
+  border-color:  #FFFFFF;
+}
+
+@media (min-width: 1200px) {
+  body {
+    padding: 0 10%;
+  }
+}
+
+@media (min-width: 1920px) {
+  body {
+    padding: 0 20%;
+  }
+}

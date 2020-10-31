@@ -39,6 +39,12 @@ const ErrorLabel = styled.div`
   font-size: 1.3rem;
 `;
 
+const StyledActionContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 3rem;
+`;
+
 const FormikInput = (props) => {
   const {
     id, label, name, type, placeholder,
@@ -128,62 +134,71 @@ FormikMultiSelect.propTypes = {
 };
 
 const MovieForm = ({
-  movie, onSubmit, children,
-}) => (
-  <Formik
-    initialValues={movie}
-    validate={(values) => {
-      const errors = {};
-      const required = 'Required Field!';
-      const {
-        title,
-        tagline,
-        release_date,
-        poster_path,
-        overview,
-        runtime,
-        genres,
-      } = values;
-      Object.entries({
-        title,
-        tagline,
-        release_date,
-        poster_path,
-        overview,
-        runtime,
-        genres,
-      })
-        .filter(([, value]) => !value)
-        .forEach(([key]) => { errors[key] = required; });
-      if (!values.genres.length) {
-        errors.genres = required;
-      }
-      if (!Number.parseInt(values.runtime, 10)) {
-        errors.runtime = 'Should be a number!';
-      }
-      const urlRegex = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
-      if (!urlRegex.test(values.poster_path)) {
-        errors.poster_path = 'Should be a valid URL!';
-      }
-      return errors;
-    }}
-    onSubmit={async (values, { setSubmitting }) => {
-      await onSubmit(values);
-      setSubmitting(false);
-    }}
-  >
-    <Form>
-      <FormikInput id="title" label="Title" name="title" type="text" placeholder="Title" inputClassName={StyledInput} />
-      <FormikDatePicker id="release_date" label="Release Date" name="release_date" placeholder="Select Date" />
-      <FormikInput id="poster_path" label="Movie Url" name="poster_path" type="text" placeholder="Movie Url here" inputClassName={StyledInput} />
-      <FormikMultiSelect id="genres" label="Genre" name="genres" placeholder="Select Genre" options={GENRES} />
-      <FormikInput id="overview" label="Overview" name="overview" type="text" placeholder="Overview here" inputClassName={StyledInput} />
-      <FormikInput id="runtime" label="Runtime" name="runtime" placeholder="Runtime here" type="number" inputClassName={StyledInput} />
-      <FormikInput id="tagline" label="Tagline" name="tagline" type="text" placeholder="Tagline here" inputClassName={StyledInput} />
-      {children}
-    </Form>
-  </Formik>
-);
+  movie, onSubmit, resetAction, submitAction,
+}) => {
+  const validate = (values) => {
+    const errors = {};
+    const required = 'Required Field!';
+    const {
+      title,
+      tagline,
+      release_date,
+      poster_path,
+      overview,
+      runtime,
+      genres,
+    } = values;
+    Object.entries({
+      title,
+      tagline,
+      release_date,
+      poster_path,
+      overview,
+      runtime,
+      genres,
+    })
+      .filter(([, value]) => !value)
+      .forEach(([key]) => { errors[key] = required; });
+    if (!values.genres.length) {
+      errors.genres = required;
+    }
+    if (!Number.parseInt(values.runtime, 10)) {
+      errors.runtime = 'Should be a number!';
+    }
+    const urlRegex = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
+    if (!urlRegex.test(values.poster_path)) {
+      errors.poster_path = 'Should be a valid URL!';
+    }
+    return errors;
+  };
+
+  return (
+    <Formik
+      initialValues={movie}
+      validate={validate}
+      onSubmit={async (values, { setSubmitting }) => {
+        await onSubmit(values);
+        setSubmitting(false);
+      }}
+      // PATTERN: render props
+      render={({ submitForm, resetForm }) => (
+        <Form>
+          <FormikInput id="title" label="Title" name="title" type="text" placeholder="Title" inputClassName={StyledInput} />
+          <FormikDatePicker id="release_date" label="Release Date" name="release_date" placeholder="Select Date" />
+          <FormikInput id="poster_path" label="Movie Url" name="poster_path" type="text" placeholder="Movie Url here" inputClassName={StyledInput} />
+          <FormikMultiSelect id="genres" label="Genre" name="genres" placeholder="Select Genre" options={GENRES} />
+          <FormikInput id="overview" label="Overview" name="overview" type="text" placeholder="Overview here" inputClassName={StyledInput} />
+          <FormikInput id="runtime" label="Runtime" name="runtime" placeholder="Runtime here" type="number" inputClassName={StyledInput} />
+          <FormikInput id="tagline" label="Tagline" name="tagline" type="text" placeholder="Tagline here" inputClassName={StyledInput} />
+          <StyledActionContainer>
+            {resetAction(resetForm)}
+            {submitAction(submitForm)}
+          </StyledActionContainer>
+        </Form>
+      )}
+    />
+  );
+};
 
 MovieForm.defaultProps = {
   movie: {
@@ -207,7 +222,8 @@ MovieForm.propTypes = {
     runtime: PropTypes.number,
     tagline: PropTypes.string,
   }),
-  children: PropTypes.node.isRequired,
+  resetAction: PropTypes.func.isRequired,
+  submitAction: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
 };
 

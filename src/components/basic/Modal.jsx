@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { PRIMARY, BACKGROUND } from '../../theme';
 import ClickAwayListener from './ClickAwayListener';
 import Title from './Title';
+import withLoggingProps from '../../hoc/withLoggingProps';
 
 const Overlay = styled.div`
   position: fixed;
@@ -102,4 +103,5 @@ Modal.propTypes = {
   title: PropTypes.string.isRequired,
 };
 
-export default Modal;
+// PATTERN: Higher order component
+export default withLoggingProps(Modal);
